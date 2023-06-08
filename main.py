@@ -1,21 +1,22 @@
-from flask import Flask, request, jsonify
 import jwt
-from flask_jwt_extended import JWTManager, jwt_required, create_access_token, decode_token
-from flask_jwt_extended.exceptions import JWTDecodeError
-from jwt import ExpiredSignatureError
-import secrets
-from flask_cors import CORS
-from flask_bcrypt import generate_password_hash, check_password_hash
-from datetime import datetime, timedelta
 import time
-import pymysql.cursors
-from flask import Flask, request, jsonify
-import numpy as np
-from PIL import Image
-import tensorflow as tf
-from google.cloud import storage
-from io import BytesIO
 import uuid
+import secrets
+import numpy as np
+import pymysql.cursors
+import tensorflow as tf
+#============================
+from PIL import Image
+from io import BytesIO
+from pytz import timezone
+from flask_cors import CORS
+from google.cloud import storage
+from jwt import ExpiredSignatureError
+from datetime import datetime, timedelta
+from flask import Flask, request, jsonify
+from flask_jwt_extended.exceptions import JWTDecodeError
+from flask_bcrypt import generate_password_hash, check_password_hash
+from flask_jwt_extended import JWTManager, jwt_required, create_access_token, decode_token
 
 app = Flask(__name__)
 CORS(app)
@@ -73,7 +74,7 @@ def predict_image(image, interpreter, input_details, output_details):
     interpreter.set_tensor(input_details[0]['index'], image)
     interpreter.invoke()
     output = interpreter.get_tensor(output_details[0]['index'])
-    predicted_class = "Mata Terjangkit Penyakit Pinkeye" if output[0][0] < 0.5 else "Mata Hewan Kamu Sehat! tetap jaga ya!" 
+    predicted_class = "Mata Terjangkit Penyakit Pinkeye" if output[0][0] < 0.5 else "Mata Hewan Kamu Sehat!" 
     probability = output[0][0]
 
     return predicted_class, probability
@@ -106,6 +107,25 @@ def validate_token(token):
         return False, 'Invalid token. Please log in again.'
 
 
+
+def save_prediction_to_history(user_id, animal_category, prediction_result, image_url):
+    cur = db.cursor()
+    created_at = datetime.now(timezone('Asia/Jakarta'))
+    cur.execute(
+        "INSERT INTO history (user_id, animal_category, prediction_result, image_url, created_at) VALUES (%s, %s, %s, %s, %s)",
+        (user_id, animal_category, prediction_result, image_url, created_at)
+    )
+    db.commit()
+    cur.close()
+
+def get_user_id_from_token(request):
+    token = request.headers.get('Authorization').split()[1]
+    is_valid, user_id = validate_token(token)
+
+    if not is_valid:
+        return None
+
+    return user_id
 @app.route('/api/auth/register', methods=['POST'])
 def register():
     email = request.json['email']
@@ -161,8 +181,10 @@ def login():
         'message': 'Wrong Password or Account not found'
     })
 
+
 # Endpoint /predictsapi
 @app.route('/api/predictsapi', methods=['POST'])
+@jwt_required()
 def predict_sapi():
     if 'image' not in request.files:
         return jsonify({'error': 'No image uploaded'})
@@ -176,11 +198,15 @@ def predict_sapi():
 
     predicted_class, probability = predict_image(image, interpreter, input_details, output_details)
 
+    user_id = get_user_id_from_token(request)
+    save_prediction_to_history(user_id, 'Sapi', predicted_class, image_url)
+
     result = {'class': predicted_class, 'probability': float(probability), 'image_url': image_url}
     return jsonify(result)
 
 # Endpoint /predictkambing
 @app.route('/api/predictkambing', methods=['POST'])
+@jwt_required()
 def predict_kambing():
     if 'image' not in request.files:
         return jsonify({'error': 'No image uploaded'})
@@ -194,8 +220,31 @@ def predict_kambing():
 
     predicted_class, probability = predict_image(image, interpreter, input_details, output_details)
 
+    user_id = get_user_id_from_token(request)
+    save_prediction_to_history(user_id, 'Kambing', predicted_class, image_url)
+
     result = {'class': predicted_class, 'probability': float(probability), 'image_url': image_url}
     return jsonify(result)
+
+
+@app.route('/api/profile/history', methods=['GET'])
+@jwt_required()
+def get_history():
+    user_id = get_user_id_from_token(request)
+
+    if not user_id:
+        return jsonify({'error': True, 'message': 'Invalid token. Please log in again.'})
+
+    cur = db.cursor()
+    cur.execute("SELECT * FROM history WHERE user_id = %s", (user_id,))
+    history = cur.fetchall()
+    cur.close()
+
+    if not history:
+        return jsonify({'error': False, 'message': 'No history found for user_id: {}'.format(user_id)})
+
+    return jsonify({'error': False, 'history': history})
+
 
 # Endpoint /api/products
 @app.route('/api/products', methods=['GET'])
