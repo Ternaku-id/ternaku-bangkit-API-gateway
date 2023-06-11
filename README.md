@@ -20,6 +20,9 @@ Welcome to the Ternaku backend application documentation. Ternaku is a livestock
   - [Homepage](#homepage)
 - [Running the Application](#running-the-application)
 
+![Logo](https://raw.githubusercontent.com/Ternaku-id/ternaku-bangkit-Cloud-Computing/backend/diagram-bangkit-1.png)
+
+
 ## Prerequisites
 
 Before running the Ternaku backend application, make sure you have the following installed:
