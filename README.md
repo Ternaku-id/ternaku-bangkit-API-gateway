@@ -8,7 +8,7 @@ Welcome to the Ternaku backend application documentation. Ternaku is a livestock
 - [Installation](#installation)
 - [Configuration](#configuration)
 - [Database](#database)
-- [API Endpoints](#api-endpoints)
+- [Documentation API](#documentation-api-ternaku)
   - [Register](#register)
   - [Login](#login)
   - [Predict Cattle](#predict-cattle)
@@ -130,7 +130,7 @@ This table stores articles published in the application.
 | img_url         | VARCHAR(255) |                |
 
 
-## API Endpoints
+## DOCUMENTATION API TERNAKU
 
 ### Authentication
 
