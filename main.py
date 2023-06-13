@@ -20,10 +20,10 @@ from flask_jwt_extended import JWTManager, jwt_required, create_access_token, de
 
 app = Flask(__name__)
 CORS(app)
-app.config['MYSQL_HOST'] = '34.143.132.191'
+app.config['MYSQL_HOST'] = '35.186.157.64'
 app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD'] = 'daffa123'
-app.config['MYSQL_DB'] = 'python'
+app.config['MYSQL_DB'] = 'ternakudb'
 app.config['MYSQL_CURSORCLASS'] = 'pymysql.cursors.DictCursor'
 app.config['JWT_SECRET_KEY'] = secrets.token_hex(16)
 db = pymysql.connections.Connection(
@@ -37,7 +37,7 @@ jwt = JWTManager(app)
 # key json google serviceacc
 service_account_key_path = 'key.json'
 
-model_bucket = 'ternaku-tes2'
+model_bucket = 'ternaku-bucket'
 sapi_model_blob = 'model_sapi.tflite'
 kambing_model_blob = 'model_kambing.tflite'
 
@@ -79,7 +79,7 @@ def predict_image(image, interpreter, input_details, output_details):
 
     return predicted_class, probability
 
-bucket_name = 'ternaku-tes2'
+bucket_name = 'ternaku-bucket'
 image_folder = 'image'
 
 def upload_image_to_gcs(image):
