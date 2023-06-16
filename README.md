@@ -199,7 +199,7 @@ This table stores articles published in the application.
 
 #### Predict Cattle
 
-- **Endpoint:** /api/predict-cattle
+- **Endpoint:** /api/predictsapi
 - **Method:** POST
 - **Request Body:**
   - image (file): Image file to classify (JPEG format)
@@ -229,7 +229,7 @@ This table stores articles published in the application.
 
 #### Predict Goat
 
-- **Endpoint:** /api/predict-goat
+- **Endpoint:** /api/predictkambing
 - **Method:** POST
 - **Request Body:**
   - image (file): Image file to classify (JPEG format)
