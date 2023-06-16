@@ -461,3 +461,6 @@ The application will start running on `http://localhost:8080/`.
 Make sure you have the required dependencies installed and the necessary configurations set before running the application.
 
 That's it! You have successfully set up and documented the Ternaku backend application.
+
+## Disclaimer
+-   This project is created for educational purpose as the requirement to graduate from [**_Bangkit Academy led by Google, Tokopedia, Gojek, & Traveloka_**.](https://www.linkedin.com/company/bangkit-academy/mycompany/)
