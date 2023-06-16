@@ -11,7 +11,7 @@ Welcome to the Ternaku backend application documentation. Ternaku is a livestock
 - [Documentation API](#documentation-api-ternaku)
   - [Register](#register)
   - [Login](#login)
-  - [Predict Cattle](#predict-cattle)
+  - [Predict Cow](#predict-cattle)
   - [Predict Goat](#predict-goat)
   - [Get History](#get-history)
   - [Get Products](#products)
